@@ -1,0 +1,15 @@
+com\andrewrazin\ratingsystemforrest\demo\controller\RestaurantController.class
+com\andrewrazin\ratingsystemforrest\demo\entity\CuisineType.class
+com\andrewrazin\ratingsystemforrest\demo\controller\ReviewController.class
+com\andrewrazin\ratingsystemforrest\demo\repository\ReviewRepository.class
+com\andrewrazin\ratingsystemforrest\demo\DataLoader.class
+com\andrewrazin\ratingsystemforrest\demo\RatingsystemforrestApplication.class
+com\andrewrazin\ratingsystemforrest\demo\entity\Visitor.class
+com\andrewrazin\ratingsystemforrest\demo\service\ReviewService.class
+com\andrewrazin\ratingsystemforrest\demo\service\VisitorService.class
+com\andrewrazin\ratingsystemforrest\demo\service\RestaurantService.class
+com\andrewrazin\ratingsystemforrest\demo\controller\VisitorController.class
+com\andrewrazin\ratingsystemforrest\demo\repository\VisitorRepository.class
+com\andrewrazin\ratingsystemforrest\demo\repository\RestaurantRepository.class
+com\andrewrazin\ratingsystemforrest\demo\entity\Review.class
+com\andrewrazin\ratingsystemforrest\demo\entity\Restaurant.class
