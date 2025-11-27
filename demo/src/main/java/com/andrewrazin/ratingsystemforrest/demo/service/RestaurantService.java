@@ -1,6 +1,8 @@
 package com.andrewrazin.ratingsystemforrest.demo.service;
-
+import com.andrewrazin.ratingsystemforrest.demo.dto.request.RestaurantRequestDTO;
+import com.andrewrazin.ratingsystemforrest.demo.dto.response.RestaurantResponseDTO;
 import com.andrewrazin.ratingsystemforrest.demo.entity.Restaurant;
+import com.andrewrazin.ratingsystemforrest.demo.mapper.RestaurantMapper;
 import com.andrewrazin.ratingsystemforrest.demo.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,26 +14,41 @@ import java.util.Optional;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantMapper restaurantMapper;
 
     @Autowired
-    public RestaurantService(RestaurantRepository restaurantRepository) {
+    public RestaurantService(RestaurantRepository restaurantRepository, RestaurantMapper restaurantMapper) {
         this.restaurantRepository = restaurantRepository;
+        this.restaurantMapper = restaurantMapper;
     }
 
-    public Restaurant save(Restaurant restaurant) {
-        return restaurantRepository.save(restaurant);
+    public RestaurantResponseDTO save(RestaurantRequestDTO restaurantRequestDTO) {
+        Restaurant restaurant = restaurantMapper.toEntity(restaurantRequestDTO);
+        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+        return restaurantMapper.toResponseDTO(savedRestaurant);
     }
 
-    public void remove(Long id) {
+    public List<RestaurantResponseDTO> findAll() {
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+        return restaurantMapper.toResponseDTOList(restaurants);
+    }
+
+    public Optional<RestaurantResponseDTO> findById(Long id) {
+        return restaurantRepository.findById(id)
+                .map(restaurantMapper::toResponseDTO);
+    }
+
+    public RestaurantResponseDTO update(Long id, RestaurantRequestDTO restaurantRequestDTO) {
+        Restaurant existingRestaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Restaurant not found with id: " + id));
+
+        restaurantMapper.updateEntityFromDTO(restaurantRequestDTO, existingRestaurant);
+        Restaurant updatedRestaurant = restaurantRepository.save(existingRestaurant);
+        return restaurantMapper.toResponseDTO(updatedRestaurant);
+    }
+
+    public void delete(Long id) {
         restaurantRepository.deleteById(id);
-    }
-
-    public List<Restaurant> findAll() {
-        return restaurantRepository.findAll();
-    }
-
-    public Optional<Restaurant> findById(Long id) {
-        return restaurantRepository.findById(id);
     }
 
     public boolean existsById(Long id) {
