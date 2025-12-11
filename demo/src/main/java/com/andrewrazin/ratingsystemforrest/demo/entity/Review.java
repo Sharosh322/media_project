@@ -3,18 +3,21 @@ package com.andrewrazin.ratingsystemforrest.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "reviews")
+@Table(name = "reviews",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"visitor_id", "restaurant_id"}))
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "visitor_id", nullable = false)
-    private Long visitorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "visitor_id", nullable = false)
+    private Visitor visitor;
 
-    @Column(name = "restaurant_id", nullable = false)
-    private Long restaurantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
 
     @Column(name = "rating", nullable = false)
     private Integer rating;
@@ -22,14 +25,20 @@ public class Review {
     @Column(name = "review_text", columnDefinition = "TEXT")
     private String reviewText;
 
-    // Конструкторы
-    public Review() {}
+    @Column(name = "created_at", nullable = false)
+    private java.time.LocalDateTime createdAt;
 
-    public Review(Long visitorId, Long restaurantId, Integer rating, String reviewText) {
-        this.visitorId = visitorId;
-        this.restaurantId = restaurantId;
+    // Конструкторы
+    public Review() {
+        this.createdAt = java.time.LocalDateTime.now();
+    }
+
+    public Review(Visitor visitor, Restaurant restaurant, Integer rating, String reviewText) {
+        this.visitor = visitor;
+        this.restaurant = restaurant;
         this.rating = rating;
         this.reviewText = reviewText;
+        this.createdAt = java.time.LocalDateTime.now();
     }
 
     // Геттеры и сеттеры
@@ -41,20 +50,20 @@ public class Review {
         this.id = id;
     }
 
-    public Long getVisitorId() {
-        return visitorId;
+    public Visitor getVisitor() {
+        return visitor;
     }
 
-    public void setVisitorId(Long visitorId) {
-        this.visitorId = visitorId;
+    public void setVisitor(Visitor visitor) {
+        this.visitor = visitor;
     }
 
-    public Long getRestaurantId() {
-        return restaurantId;
+    public Restaurant getRestaurant() {
+        return restaurant;
     }
 
-    public void setRestaurantId(Long restaurantId) {
-        this.restaurantId = restaurantId;
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
     }
 
     public Integer getRating() {
@@ -73,14 +82,23 @@ public class Review {
         this.reviewText = reviewText;
     }
 
+    public java.time.LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(java.time.LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return "Review{" +
                 "id=" + id +
-                ", visitorId=" + visitorId +
-                ", restaurantId=" + restaurantId +
+                ", visitor=" + (visitor != null ? visitor.getId() : "null") +
+                ", restaurant=" + (restaurant != null ? restaurant.getId() : "null") +
                 ", rating=" + rating +
                 ", reviewText='" + reviewText + '\'' +
+                ", createdAt=" + createdAt +
                 '}';
     }
 }

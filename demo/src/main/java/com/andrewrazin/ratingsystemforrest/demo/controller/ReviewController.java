@@ -1,11 +1,14 @@
 package com.andrewrazin.ratingsystemforrest.demo.controller;
+
 import com.andrewrazin.ratingsystemforrest.demo.dto.request.ReviewRequestDTO;
 import com.andrewrazin.ratingsystemforrest.demo.dto.response.ReviewResponseDTO;
 import com.andrewrazin.ratingsystemforrest.demo.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -82,6 +85,67 @@ public class ReviewController {
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/paged")
+    @Operation(summary = "Получить отзывы с пагинацией и сортировкой")
+    public ResponseEntity<Page<ReviewResponseDTO>> getAllReviewsPaged(
+            @Parameter(description = "Номер страницы (начиная с 0)")
+            @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Размер страницы")
+            @RequestParam(defaultValue = "10") int size,
+
+            @Parameter(description = "Поле для сортировки (rating, createdAt)")
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+
+            @Parameter(description = "Направление сортировки (asc, desc)")
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        Page<ReviewResponseDTO> reviews = reviewService.findAllWithPagination(page, size, sortBy, direction);
+        return ResponseEntity.ok(reviews);
+    }
+
+    @GetMapping("/restaurant/{restaurantId}/paged")
+    @Operation(summary = "Получить отзывы по ресторану с пагинацией")
+    public ResponseEntity<Page<ReviewResponseDTO>> getReviewsByRestaurantPaged(
+            @PathVariable Long restaurantId,
+            @Parameter(description = "Номер страницы (начиная с 0)")
+            @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Размер страницы")
+            @RequestParam(defaultValue = "10") int size,
+
+            @Parameter(description = "Поле для сортировки (rating, createdAt)")
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+
+            @Parameter(description = "Направление сортировки (asc, desc)")
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        Page<ReviewResponseDTO> reviews = reviewService.findByRestaurantIdWithPagination(
+                restaurantId, page, size, sortBy, direction);
+        return ResponseEntity.ok(reviews);
+    }
+
+    @GetMapping("/visitor/{visitorId}/paged")
+    @Operation(summary = "Получить отзывы по посетителю с пагинацией")
+    public ResponseEntity<Page<ReviewResponseDTO>> getReviewsByVisitorPaged(
+            @PathVariable Long visitorId,
+            @Parameter(description = "Номер страницы (начиная с 0)")
+            @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Размер страницы")
+            @RequestParam(defaultValue = "10") int size,
+
+            @Parameter(description = "Поле для сортировки (rating, createdAt)")
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+
+            @Parameter(description = "Направление сортировки (asc, desc)")
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        Page<ReviewResponseDTO> reviews = reviewService.findByVisitorIdWithPagination(
+                visitorId, page, size, sortBy, direction);
+        return ResponseEntity.ok(reviews);
     }
 }
 
