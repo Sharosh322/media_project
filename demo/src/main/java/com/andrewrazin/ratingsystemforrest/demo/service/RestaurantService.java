@@ -53,7 +53,11 @@ public class RestaurantService {
         return restaurantMapper.toResponseDTO(updatedRestaurant);
     }
 
+    @Transactional
     public void delete(Long id) {
+        if (!restaurantRepository.existsById(id)) {
+            throw new RuntimeException("Restaurant not found with id: " + id);
+        }
         restaurantRepository.deleteById(id);
     }
 
@@ -71,11 +75,9 @@ public class RestaurantService {
         }
     }
     public List<RestaurantResponseDTO> findRestaurantsWithMinRating(BigDecimal minRating) {
-        // Способ 1: Используя конвенции имен методов
         List<Restaurant> restaurants = restaurantRepository.findByRatingGreaterThanEqual(minRating);
-        return restaurants.stream()
-                .map(restaurantMapper::toResponseDTO)
-                .collect(Collectors.toList());
+        // Убедитесь, что используется toResponseDTOList, а не toResponseDTO
+        return restaurantMapper.toResponseDTOList(restaurants);
     }
 
     public List<RestaurantResponseDTO> findRestaurantsWithMinRatingSorted(BigDecimal minRating) {
